@@ -121,7 +121,7 @@ public class ExpenseController {
         return new ResponseEntity<>("successfully updated expense for id:  " + id , HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PostMapping("/expenses")
     public ResponseEntity<Expense> addExpense(@RequestBody Expense expense,
                                               Authentication authentication){
 
