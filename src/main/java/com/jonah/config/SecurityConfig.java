@@ -37,7 +37,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws  Exception{
         http
-                //.csrf(csrf->csrf.disable)
+                .csrf(csrf->csrf.disable() )
                 .headers(h->h.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))  //Enable in production
                 .sessionManagement(session->session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
