@@ -15,7 +15,6 @@ import java.security.SecureRandom;
 import java.util.List;
 
 @RestController
-@RequestMapping("/expenses")
 public class ExpenseController {
 
     private final ExpenseService expenseService;
@@ -26,7 +25,7 @@ public class ExpenseController {
         this.userService = userService;
     }
 
-    @GetMapping()
+    @GetMapping("/expenses")
     public ResponseEntity<List<Expense>> getAllUserExpenses(Authentication authentication){
         String username = authentication.getName();
         AppUser user = userService.findByUsername( username );
@@ -34,7 +33,7 @@ public class ExpenseController {
         return ResponseEntity.ok( expenseService.getAllUserExpenses( user.getId() ));
     }
 
-    @GetMapping("/categories")
+    @GetMapping("/expenses/categories")
     public ResponseEntity<List<String>> getExpenseCategories(Authentication authentication){
         String username = authentication.getName();
         AppUser user = userService.findByUsername( username );
@@ -48,7 +47,7 @@ public class ExpenseController {
        return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
-    @GetMapping("/categories/{month}")
+    @GetMapping("/expenses/categories/{month}")
     public ResponseEntity<List<String>> getExpenseCategoriesByMonth(@PathVariable("month") String month,
                                                                     Authentication authentication){
         String username = authentication.getName();
@@ -63,7 +62,7 @@ public class ExpenseController {
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/expenses/{id}")
     public ResponseEntity<Expense> getExpenseById(@PathVariable Long id, Authentication authentication ){
          String username = authentication.getName();
 
@@ -74,7 +73,7 @@ public class ExpenseController {
         return ResponseEntity.ok( expense ); //new ResponseEntity<>(expense, HttpStatus.OK); // Found the expense with matching id
     }
 
-    @GetMapping("/day/{date}")
+    @GetMapping("/expenses/day/{date}")
     public ResponseEntity<List<Expense>> getExpenseByDay(@PathVariable String date,
                                                          Authentication authentication){
 
@@ -89,7 +88,7 @@ public class ExpenseController {
         return new ResponseEntity<>( expenses, HttpStatus.OK );
     }
 
-    @GetMapping("/categories/{category}/month")
+    @GetMapping("/expenses/categories/{category}/month")
     public ResponseEntity<List<Expense>> getExpenseByCategoriesAndMonth(@PathVariable("category") String category,
                                                                         @RequestParam("month") String month,
                                                                         Authentication authentication){
@@ -104,7 +103,7 @@ public class ExpenseController {
         return  ResponseEntity.ok( expenses );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/expenses/{id}")
     public ResponseEntity<String> updateExpense(@PathVariable Long id,
                                                 @RequestBody Expense updatedExpense,
                                                 Authentication authentication){
@@ -137,7 +136,7 @@ public class ExpenseController {
         return new ResponseEntity<>( expenseService.addExpense( expense, user.getId() ), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/expenses/{id}")
     public ResponseEntity<String> deleteExpense(@PathVariable("id") Long id,
                                                 Authentication authentication){
         String username = authentication.getName();
