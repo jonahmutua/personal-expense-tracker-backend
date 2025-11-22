@@ -28,4 +28,4 @@ jobs:
           VPS_IP: ${{ secrets.VPS_IP }}
           APP_PATH: ${{ secrets.APP_PATH }}
         run: |
-          ssh -o ConnectTimeout=10 $VPS_USER@$VPS_IP "sh -c 'cd ${{ secrets.APP_PATH }} && git config --global --add safe.directory ${{ secrets.APP_PATH }} && git stash && git pull origin main && ./gradlew clean build -x test && mkdir -p lib && JAR_FILE=\$(ls build/libs/*SNAPSHOT.jar | grep -v plain | head -1) && cp \$JAR_FILE lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar && echo \"JAR copied: \$JAR_FILE\" && ls -lh lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar && systemctl restart expensesapp && sleep 2 && systemctl status expensesapp && echo \"Deployment completed successfully\"'"
+          ssh -o ConnectTimeout=10 $VPS_USER@$VPS_IP "sh -c 'cd ${{ secrets.APP_PATH }} && git config --global --add safe.directory ${{ secrets.APP_PATH }} && git stash && git pull origin main && ./gradlew clean build -x test && mkdir -p lib && cp build/libs/*SNAPSHOT.jar lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar && systemctl restart expensesapp && echo Deployment completed'"
