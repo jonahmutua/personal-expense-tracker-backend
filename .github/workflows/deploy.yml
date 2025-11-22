@@ -28,10 +28,10 @@ jobs:
           VPS_IP: ${{ secrets.VPS_IP }}
           APP_PATH: ${{ secrets.APP_PATH }}
         run: |
-          ssh -o ConnectTimeout=10 $VPS_USER@$VPS_IP << 'EOFSCRIPT'
+          ssh -o ConnectTimeout=10 $VPS_USER@$VPS_IP << EOFSCRIPT
           set -e
           echo "=== Starting Deployment ==="
-          echo "Current directory: $(pwd)"
+          echo "Current directory: \$(pwd)"
           
           echo "=== Changing to app directory ==="
           cd $APP_PATH
