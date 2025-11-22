@@ -12,6 +12,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      # set up SSH agent
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.1
         with:
