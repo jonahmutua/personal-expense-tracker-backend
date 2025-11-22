@@ -28,18 +28,21 @@ jobs:
           VPS_IP: ${{ secrets.VPS_IP }}
           APP_PATH: ${{ secrets.APP_PATH }}
         run: |
-          ssh -vvv -o ConnectTimeout=10 $VPS_USER@$VPS_IP << 'EOF'
+          ssh -o ConnectTimeout=10 $VPS_USER@$VPS_IP << EOF
           set -e
           echo "=== Deployment Log ===" 
-          echo "Time: $(date)" 
-          echo "User: $(whoami)"
-          echo "PWD: $(pwd)"
+          echo "Time: \$(date)" 
+          echo "User: \$(whoami)"
+          echo "PWD: \$(pwd)"
           
           cd $APP_PATH || { echo "FAILED: Cannot cd to $APP_PATH"; exit 1; }
           echo "Changed to: $(pwd)"
           
           git config --global --add safe.directory $APP_PATH
           echo "Git config updated"
+          
+          echo "=== Stashing local changes ==="
+          git stash
           
           echo "=== Before git pull ==="
           git log --oneline -1
@@ -56,13 +59,20 @@ jobs:
           echo "=== Build artifacts ==="
           ls -lh build/libs/
           
-          JAR_FILE=$(ls -t build/libs/*.jar | head -1)
-          if [ -z "$JAR_FILE" ]; then
-            echo "FAILED: No JAR file found"
+          echo "=== Locating JAR file ==="
+          cd build/libs
+          JAR_FILE=$(ls -1 *SNAPSHOT.jar | grep -v plain)
+          cd ../..
+          JAR_PATH="build/libs/$JAR_FILE"
+          
+          echo "JAR file: $JAR_FILE"
+          echo "Full path: $JAR_PATH"
+          
+          if [ ! -f "$JAR_PATH" ]; then
+            echo "FAILED: JAR not found"
             exit 1
           fi
-          
-          echo "JAR to deploy: $JAR_FILE"
+          echo "✓ JAR verified"
           
           echo "=== Copying JAR ==="
           mkdir -p lib
