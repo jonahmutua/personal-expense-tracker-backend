@@ -3,30 +3,34 @@ name: Deploy Spring Boot App
 on:
   push:
     branches:
-      - main  # run deploy on main branch push
+      - main
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest # for the job, spin up a fresh linux VM
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3  # pulls repo code into Github Actions
+        uses: actions/checkout@v4
 
       - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.9.1 # start SSH agent in the workflow runner
+        uses: webfactory/ssh-agent@v0.9.1
         with:
-          ssh-private-key: ${{ secrets.VPS_SSH_KEY }} # load private ssh key
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-      # Deploy to VPS
+      - name: Add VPS to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.VPS_IP }} >> ~/.ssh/known_hosts
+
       - name: Deploy to VPS
         env:
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_IP: ${{ secrets.VPS_IP }}
           APP_PATH: ${{ secrets.APP_PATH }}
         run: |
-          ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP "
-          cd $APP_PATH &&
-          git pull &&
-          ./gradlew clean build &&
+          ssh -o ConnectTimeout=10 $VPS_USER@$VPS_IP << 'EOF'
+          cd $APP_PATH
+          git pull
+          ./gradlew clean build
           sudo systemctl restart expensesapp
-          "
+          EOF
