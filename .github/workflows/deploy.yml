@@ -61,8 +61,9 @@ jobs:
           
           echo "=== Copying JAR ==="
           mkdir -p lib
-          cp $JAR lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar
-          echo "JAR copied"
+          cp build/libs/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar
+          echo "JAR copied successfully"
+          ls -lh lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.ja
           
   
           echo "=== Restarting service ==="
