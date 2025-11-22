@@ -63,7 +63,7 @@ jobs:
           mkdir -p lib
           cp build/libs/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar
           echo "JAR copied successfully"
-          ls -lh lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.ja
+          ls -lh lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar
           
   
           echo "=== Restarting service ==="
