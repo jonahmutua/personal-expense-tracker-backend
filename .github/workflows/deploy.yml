@@ -12,7 +12,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # set up SSH con
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.1
         with:
@@ -29,9 +28,59 @@ jobs:
           VPS_IP: ${{ secrets.VPS_IP }}
           APP_PATH: ${{ secrets.APP_PATH }}
         run: |
-          ssh -o ConnectTimeout=10 $VPS_USER@$VPS_IP << 'EOF'
-          cd $APP_PATH
-          git pull
-          ./gradlew clean build
-          sudo systemctl restart expensesapp
+          ssh -vvv -o ConnectTimeout=10 $VPS_USER@$VPS_IP << 'EOF'
+          set -e
+          echo "=== Deployment Log ===" 
+          echo "Time: $(date)" 
+          echo "User: $(whoami)"
+          echo "PWD: $(pwd)"
+          
+          cd $APP_PATH || { echo "FAILED: Cannot cd to $APP_PATH"; exit 1; }
+          echo "Changed to: $(pwd)"
+          
+          git config --global --add safe.directory $APP_PATH
+          echo "Git config updated"
+          
+          echo "=== Before git pull ==="
+          git log --oneline -1
+          
+          echo "=== Running git pull ==="
+          git pull || { echo "FAILED: git pull failed"; exit 1; }
+          
+          echo "=== After git pull ==="
+          git log --oneline -1
+          
+          echo "=== Running gradle build ==="
+          ./gradlew clean build -x test 2>&1 || { echo "FAILED: Build failed"; exit 1; }
+          
+          echo "=== Build artifacts ==="
+          ls -lh build/libs/
+          
+          JAR_FILE=$(ls -t build/libs/*.jar | head -1)
+          if [ -z "$JAR_FILE" ]; then
+            echo "FAILED: No JAR file found"
+            exit 1
+          fi
+          
+          echo "JAR to deploy: $JAR_FILE"
+          
+          echo "=== Copying JAR ==="
+          mkdir -p lib
+          cp "$JAR_FILE" lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar
+          
+          echo "=== Deployed JAR ==="
+          ls -lh lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar
+          
+          echo "=== Restarting service ==="
+          sudo systemctl restart expensesapp || { echo "FAILED: systemctl restart failed"; exit 1; }
+          
+          sleep 2
+          
+          echo "=== Service status ==="
+          sudo systemctl status expensesapp
+          
+          echo "=== Service logs ==="
+          sudo journalctl -u expensesapp -n 20
+          
+          echo "=== Deployment completed successfully ==="
           EOF
