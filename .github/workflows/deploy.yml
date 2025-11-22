@@ -28,57 +28,34 @@ jobs:
           VPS_IP: ${{ secrets.VPS_IP }}
           APP_PATH: ${{ secrets.APP_PATH }}
         run: |
-          ssh -o ConnectTimeout=10 $VPS_USER@$VPS_IP sh -s "$APP_PATH" << 'DEPLOY_SCRIPT'
-          set -e
+          ssh -o ConnectTimeout=10 $VPS_USER@$VPS_IP << 'EOF'
+          echo "=== Starting Deployment ==="
+          echo "Current directory: $(pwd)"
           
-          APP_PATH="$1"
+          echo "=== Navigating to app path ==="
+          cd $APP_PATH
+          echo "App path: $(pwd)"
           
-          echo "=== Deployment Started ==="
-          echo "Time: $(date)"
-          echo "User: $(whoami)"
-          echo "Working directory: $APP_PATH"
+          echo "=== Checking git status before pull ==="
+          git status
           
-          cd "$APP_PATH" || { echo "ERROR: Cannot cd to $APP_PATH"; exit 1; }
-          
-          # Configure git
-          git config --global --add safe.directory "$APP_PATH"
-          
-          # Update code
           echo "=== Pulling latest code ==="
-          git stash || true
-          git pull origin main
-          echo "✓ Code pulled successfully"
+          git pull
           
-          # Build
+          echo "=== Git pull completed ==="
+          git log --oneline -5
+          
           echo "=== Building application ==="
           ./gradlew clean build -x test
-          echo "✓ Build successful"
           
-          # Deploy JAR
-          echo "=== Deploying JAR ==="
-          JAR_FILE=$(ls build/libs/*SNAPSHOT.jar | grep -v plain)
+          echo "=== Build completed successfully ==="
+          ls -la build/libs/
           
-          if [ ! -f "$JAR_FILE" ]; then
-            echo "ERROR: JAR file not found"
-            exit 1
-          fi
+          echo "=== Restarting application ==="
+          sudo systemctl restart expensesapp
           
-          mkdir -p lib
-          cp "$JAR_FILE" lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar
-          echo "✓ JAR deployed"
+          echo "=== Checking application status ==="
+          sudo systemctl status expensesapp
           
-          # Restart service
-          echo "=== Restarting service ==="
-          systemctl restart expensesapp
-          sleep 2
-          
-          # Verify
-          echo "=== Verifying deployment ==="
-          systemctl is-active expensesapp && echo "✓ Service is running" || echo "ERROR: Service failed to start"
-          
-          echo "=== Recent logs ==="
-          journalctl -u expensesapp -n 10
-          
-          echo ""
-          echo "=== Deployment Completed Successfully ==="
-          DEPLOY_SCRIPT
+          echo "=== Deployment completed ==="
+          EOF
