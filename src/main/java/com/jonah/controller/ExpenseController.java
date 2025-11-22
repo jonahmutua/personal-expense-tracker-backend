@@ -1,7 +1,7 @@
 package com.jonah.controller;
 
+import com.jonah.dto.ApiResponseDto;
 import com.jonah.exception.expense.ExpenseNotFoundException;
-import com.jonah.exception.expense.InvalidExpenseDataException;
 import com.jonah.model.AppUser;
 import com.jonah.model.Expense;
 import com.jonah.service.expense.ExpenseService;
@@ -10,10 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.security.SecureRandom;
+import java.net.URI;
 import java.util.List;
 
+// Consider Creating a generic ApiResponse DTO Class to encpsulate responses . This makes api responses uniform
 @RestController
 public class ExpenseController {
 
@@ -104,9 +106,11 @@ public class ExpenseController {
     }
 
     @PutMapping("/expenses/{id}")
-    public ResponseEntity<String> updateExpense(@PathVariable Long id,
-                                                @RequestBody Expense updatedExpense,
-                                                Authentication authentication){
+    public ResponseEntity<ApiResponseDto<Expense>> updateExpense(
+                    @PathVariable Long id,
+                    @RequestBody Expense updatedExpense,
+                    Authentication authentication,
+                    UriComponentsBuilder uriBuilder){
 
         String username = authentication.getName();
         AppUser user = userService.findByUsername( username );
@@ -115,10 +119,24 @@ public class ExpenseController {
         boolean isUpdate = expenseService.updateExpense( updatedExpense, user.getId() );
 
         if(!isUpdate){
-          return new ResponseEntity<>("Fail to update expense for id" + id , HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ApiResponseDto<>(false,
+                    "Failed to update expense id: " + id ,
+                    null),
+                    HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>("successfully updated expense for id:  " + id , HttpStatus.OK);
+        String location = uriBuilder.path("Expenses/{id}").buildAndExpand(id).toUriString();
+
+        ApiResponseDto<Expense> response = new ApiResponseDto<>(
+                true,
+                "Successfully Updated Expense",
+                updatedExpense,
+                location);
+
+        return  ResponseEntity
+                .ok()
+                .location(URI.create(location) )
+                .body( response);
     }
 
     @PostMapping("/expenses")
