@@ -12,8 +12,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # set SSH connection
-      #
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.1
         with:
@@ -32,62 +30,54 @@ jobs:
         run: |
           ssh -o ConnectTimeout=10 $VPS_USER@$VPS_IP << 'EOF'
           set -e
-          echo "=== Deployment Log ===" 
-          echo "Time: $(date)" 
+          
+          echo "=== Deployment Started ==="
+          echo "Time: $(date)"
           echo "User: $(whoami)"
           
           APP_PATH="${APP_PATH}"
-          cd "$APP_PATH" || { echo "FAILED: Cannot cd to $APP_PATH"; exit 1; }
-          echo "Changed to: $(pwd)"
+          cd "$APP_PATH" || { echo "ERROR: Cannot cd to $APP_PATH"; exit 1; }
+          echo "Working directory: $(pwd)"
           
+          # Configure git
           git config --global --add safe.directory "$APP_PATH"
-          echo "Git config updated"
           
-          echo "=== Stashing local changes ==="
+          # Update code
+          echo "=== Pulling latest code ==="
           git stash
+          git pull origin main
+          echo "✓ Code pulled successfully"
           
-          echo "=== Before git pull ==="
-          git log --oneline -1
+          # Build
+          echo "=== Building application ==="
+          ./gradlew clean build -x test
+          echo "✓ Build successful"
           
-          echo "=== Running git pull ==="
-          git pull || { echo "FAILED: git pull failed"; exit 1; }
-          
-          echo "=== After git pull ==="
-          git log --oneline -1
-          
-          echo "=== Running gradle build ==="
-          ./gradlew clean build -x test 2>&1 || { echo "FAILED: Build failed"; exit 1; }
-          
-          echo "=== Build artifacts ==="
-          ls -lh build/libs/
-          
-          echo "=== Locating JAR file ==="
+          # Deploy JAR
+          echo "=== Deploying JAR ==="
           JAR_FILE=$(ls build/libs/*SNAPSHOT.jar | grep -v plain)
-          echo "JAR file: $JAR_FILE"
           
           if [ ! -f "$JAR_FILE" ]; then
-            echo "FAILED: JAR not found at $JAR_FILE"
+            echo "ERROR: JAR file not found"
             exit 1
           fi
-          echo "✓ JAR verified"
           
-          echo "=== Copying JAR ==="
           mkdir -p lib
           cp "$JAR_FILE" lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar
+          echo "✓ JAR deployed: $(ls -lh lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar | awk '{print $5, $9}')"
           
-          echo "=== Deployed JAR ==="
-          ls -lh lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar
-          
+          # Restart service
           echo "=== Restarting service ==="
-          sudo systemctl restart expensesapp || { echo "FAILED: systemctl restart failed"; exit 1; }
-          
+          sudo systemctl restart expensesapp
           sleep 2
           
-          echo "=== Service status ==="
-          sudo systemctl status expensesapp
+          # Verify
+          echo "=== Verifying deployment ==="
+          sudo systemctl is-active expensesapp && echo "✓ Service is running" || echo "ERROR: Service failed to start"
           
-          echo "=== Service logs ==="
-          sudo journalctl -u expensesapp -n 20
+          echo "=== Recent logs ==="
+          sudo journalctl -u expensesapp -n 10
           
-          echo "=== Deployment completed successfully ==="
+          echo ""
+          echo "=== Deployment Completed Successfully ==="
           EOF
