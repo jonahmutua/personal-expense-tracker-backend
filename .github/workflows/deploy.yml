@@ -59,9 +59,10 @@ jobs:
           echo "=== Build artifacts ==="
           ls -lh build/libs/
           
-          JAR_FILE=$(ls -t build/libs/*.jar | head -1)
-          if [ -z "$JAR_FILE" ]; then
+          JAR_FILE=$(find build/libs -name "SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar" -type f)
+          if [ -z "$JAR_FILE" ] || [ ! -f "$JAR_FILE" ]; then
             echo "FAILED: No JAR file found"
+            ls -la build/libs/
             exit 1
           fi
           
