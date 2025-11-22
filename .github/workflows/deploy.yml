@@ -29,14 +29,47 @@ jobs:
           APP_PATH: ${{ secrets.APP_PATH }}
         run: |
           ssh -o ConnectTimeout=10 $VPS_USER@$VPS_IP << 'EOFSCRIPT'
+          set -e
+          echo "=== Starting Deployment ==="
+          echo "Current directory: $(pwd)"
+          
+          echo "=== Changing to app directory ==="
           cd $APP_PATH
+          echo "Now in: $(pwd)"
+          
+          echo "=== Configuring git ==="
           git config --global --add safe.directory $APP_PATH
-          git stash
+          
+          echo "=== Stashing changes ==="
+          git stash || true
+          
+          echo "=== Pulling latest code ==="
           git pull origin main
+          
+          echo "=== Starting build ==="
           ./gradlew clean build -x test
-          mkdir -p lib
+          echo "=== Build completed ==="
+          
+          echo "=== Checking build artifacts ==="
+          ls -lh build/libs/
+          
+          echo "=== Finding JAR file ==="
           JAR=$(ls build/libs/*SNAPSHOT.jar | grep -v plain | head -1)
+          echo "Found JAR: $JAR"
+          
+          echo "=== Copying JAR ==="
+          mkdir -p lib
           cp $JAR lib/SpringBootRestExpenseTracker-1.0-SNAPSHOT.jar
+          echo "JAR copied"
+          
+          echo "=== Restarting service ==="
           systemctl restart expensesapp
-          echo "Deployment completed successfully"
+          
+          echo "=== Checking service status ==="
+          systemctl status expensesapp
+          
+          echo "=== Recent logs ==="
+          journalctl -u expensesapp -n 10
+          
+          echo "=== Deployment completed successfully ==="
           EOFSCRIPT
