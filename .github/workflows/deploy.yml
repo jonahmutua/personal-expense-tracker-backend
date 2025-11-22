@@ -1,0 +1,32 @@
+name: Deploy Spring Boot App
+
+on:
+  push:
+    branches:
+      - main  # run deploy on main branch push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # for the job, spin up a fresh linux VM
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3  # pulls repo code into Github Actions
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.8.1 # start SSH agent in the workflow runner
+        with:
+          ssh-private-key: ${{ secrets.VPS_DEPLOY_KEY }} # load private ssh key
+
+      # Deploy to VPS
+      - name: Deploy to VPS
+        env:
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_IP: ${{ secrets.VPS_IP }}
+          APP_PATH: ${{ secrets.APP_PATH }}
+        run: |
+          ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP "
+          cd $APP_PATH &&
+          git pull &&
+          ./gradlew clean build &&
+          sudo systemctl restart expensesapp
+          "
