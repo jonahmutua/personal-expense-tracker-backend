@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v3  # pulls repo code into Github Actions
 
       - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.8.1 # start SSH agent in the workflow runner
+        uses: webfactory/ssh-agent@v0.9 # start SSH agent in the workflow runner
         with:
           ssh-private-key: ${{ secrets.VPS_DEPLOY_KEY }} # load private ssh key
 
