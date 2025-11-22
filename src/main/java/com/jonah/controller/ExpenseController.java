@@ -117,7 +117,7 @@ public class ExpenseController {
 
         updatedExpense.setId(id);
         boolean isUpdate = expenseService.updateExpense( updatedExpense, user.getId() );
-
+        boolean is =false;
         if(!isUpdate){
             return new ResponseEntity<>(new ApiResponseDto<>(false,
                     "Failed to update expense id: " + id ,
