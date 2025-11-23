@@ -51,8 +51,8 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public boolean updateExpense(Expense expense, Long userId) {
-        return false;
+    public Optional<Expense>updateExpense(Expense expense, Long userId) {
+        return Optional.empty();
     }
 
     @Override

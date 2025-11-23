@@ -220,9 +220,7 @@ c) SQL injection protection via JPA
 d) CORS configuration
 e) Environment variables for sensitive data
 
-License
-This project is licensed under the MIT License — see the LICENSE file for details.
 
-Author
+# Author
 Jonah Mutua
 GitHub: @jonahmutua

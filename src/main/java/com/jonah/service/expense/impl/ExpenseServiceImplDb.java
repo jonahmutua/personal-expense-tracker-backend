@@ -1,11 +1,13 @@
 package com.jonah.service.expense.impl;
 
+import com.jonah.mapper.ExpenseMapper;
 import com.jonah.model.AppUser;
 import com.jonah.model.Expense;
 import com.jonah.repository.ExpenseRepository;
 import com.jonah.repository.UserRepository;
 import com.jonah.service.expense.ExpenseService;
 import com.jonah.service.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,9 @@ import java.util.Optional;
 @Service
 @Profile("db")
 public class ExpenseServiceImplDb implements ExpenseService {
+
+    @Autowired
+    private  ExpenseMapper expenseMapper;
 
     private final ExpenseRepository expenseRepository;
     private final UserService userService;
@@ -91,20 +96,13 @@ public class ExpenseServiceImplDb implements ExpenseService {
     }
 
     @Override
-    public boolean updateExpense(Expense updatedExpense, Long userId) {
-        Optional<Expense> currentExpenseOpt = expenseRepository.findByIdAndUserId(
-                    updatedExpense.getId(), userId)
-                .stream()
-                .filter(expense -> expense.getId().equals(updatedExpense.getId())
-                ).findFirst();
-        if( currentExpenseOpt.isPresent() ){
-
-            updatedExpense.setUser( currentExpenseOpt.get().getUser() );
-            expenseRepository.save( updatedExpense );
-            return true;
-        }
-
-        return false;
+    public Optional<Expense> updateExpense(Expense updatedExpense, Long userId) {
+        return expenseRepository
+                .findByIdAndUserId(updatedExpense.getId(), userId )
+                .map( currentExpense -> {
+                    this.expenseMapper.updateExpenseFromDto(updatedExpense, currentExpense);
+                    return expenseRepository.save( currentExpense);
+                });
     }
 
     @Override

@@ -65,14 +65,30 @@ public class ExpenseController {
     }
 
     @GetMapping("/expenses/{id}")
-    public ResponseEntity<Expense> getExpenseById(@PathVariable Long id, Authentication authentication ){
+    public ResponseEntity<ApiResponseDto<Expense>> getExpenseById(@PathVariable Long id,
+                                                  Authentication authentication ,
+                                                  UriComponentsBuilder uriBuilder){
          String username = authentication.getName();
-
          AppUser user = userService.findByUsername( username );
-        Expense expense = expenseService.getExpenseById( id, user.getId() )
+         Expense expense = expenseService.getExpenseById( id, user.getId() )
                 .orElseThrow(()->new ExpenseNotFoundException("No expense found for id: "+ id) );
+        String location = uriBuilder.path("/expenses/{id}")
+                .buildAndExpand(id)
+                .toUriString();
 
-        return ResponseEntity.ok( expense ); //new ResponseEntity<>(expense, HttpStatus.OK); // Found the expense with matching id
+        ApiResponseDto<Expense> response = new ApiResponseDto<>(
+                true,
+                "Expense retrieved successfully",
+                expense,
+                location
+        );
+
+        return ResponseEntity
+                .ok()
+                .location(URI.create( location))
+                .body(response);
+
+        //return ResponseEntity.ok( expense ); //new ResponseEntity<>(expense, HttpStatus.OK); // Found the expense with matching id
     }
 
     @GetMapping("/expenses/day/{date}")
@@ -116,21 +132,16 @@ public class ExpenseController {
         AppUser user = userService.findByUsername( username );
 
         updatedExpense.setId(id);
-        boolean isUpdate = expenseService.updateExpense( updatedExpense, user.getId() );
-        boolean is =false;
-        if(!isUpdate){
-            return new ResponseEntity<>(new ApiResponseDto<>(false,
-                    "Failed to update expense id: " + id ,
-                    null),
-                    HttpStatus.NOT_FOUND);
-        }
+        Expense expense = expenseService.updateExpense( updatedExpense, user.getId() )
+                .orElseThrow(() -> new  ExpenseNotFoundException("Fail to updated expense (id:" + id + "), \\" +
+                        " reason: No entry is found for this expense."));
 
-        String location = uriBuilder.path("Expenses/{id}").buildAndExpand(id).toUriString();
+        String location = uriBuilder.path("/expenses/{id}").buildAndExpand(id).toUriString();
 
         ApiResponseDto<Expense> response = new ApiResponseDto<>(
                 true,
                 "Successfully Updated Expense",
-                updatedExpense,
+                expense,
                 location);
 
         return  ResponseEntity
