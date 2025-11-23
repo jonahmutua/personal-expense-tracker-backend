@@ -175,22 +175,15 @@ public class ExpenseController {
     }
 
     @DeleteMapping("/expenses/{id}")
-    public ResponseEntity<ApiResponseDto<Void>> deleteExpense(@PathVariable("id") Long id,
+    public ResponseEntity<Void> deleteExpense(@PathVariable("id") Long id,
                                                 Authentication authentication){
         String username = authentication.getName();
         AppUser user = userService.findByUsername( username );
 
         expenseService.deleteExpense( id, user.getId() );
 
-        ApiResponseDto<Void> response = new ApiResponseDto<>(
-                true,
-                "Expense of id: (" + id + ") was deleted successfully",
-                null
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .body(response);
+        // 204 - status code
+        return ResponseEntity.noContent().build();
     }
 
 }
