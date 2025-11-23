@@ -1,7 +1,7 @@
-Personal Expense Tracker
+# Personal Expense Tracker
 A modern, full-stack expense tracking application built with Spring Boot and Angular. Track, manage, and analyze your expenses with ease.
 
-Features
+# Features
 
 User Authentication — Secure login and registration with JWT tokens
 Expense Management — Create, update, delete, and view expenses
@@ -12,8 +12,7 @@ Comprehensive Logging — Detailed application logs with timestamps
 Auto-Deployment — CI/CD pipeline with GitHub Actions
 Error Handling — Robust error management and validation
 
-
-🚀 Quick Start
+# Quick Start
 Prerequisites
 
 Java 21 or higher
@@ -21,7 +20,7 @@ PostgreSQL database
 Git
 Gradle
 
-Installation
+# Installation
 1. Clone the repository:
    bashgit clone https://github.com/jonahmutua/personal-expense-tracker-backend.git
    cd personal-expense-tracker-backend
@@ -38,7 +37,7 @@ Installation
    bash./start.sh
    
 
-📁 Project Structure
+# Project Structure
 personal-expense-tracker-backend/
 ├── src/
 │   ├── main/
@@ -62,22 +61,20 @@ personal-expense-tracker-backend/
 ├── gradlew                      # Gradle wrapper
 └── start.sh                     # Startup script
 
-API Endpoints
-Authentication
-
+# API Endpoints
+# Authentication
 POST /api/auth/register — Register new user
 POST /api/auth/login — Login user
 POST /api/auth/logout — Logout user
 
-Expenses
-
+# Expenses
 GET /api/expenses — Get all expenses
 GET /api/expenses/{id} — Get specific expense
 POST /api/expenses — Create new expense
 PUT /api/expenses/{id} — Update expense
 DELETE /api/expenses/{id} — Delete expense
 
-Sample Response Format
+# Sample Response Format
 json{
 "success": true,
 "message": "Operation completed successfully",
@@ -90,7 +87,7 @@ json{
 "location": "/api/expenses/1"
 }
 
-🗄️ Database Schema
+# Database Schema
 Users Table
 sql CREATE TABLE app_user (
 id BIGINT PRIMARY KEY,
@@ -117,7 +114,7 @@ DB_USERNAME= database_username
 DB_PASSWORD= database_password
 
 # Server
-PORT=8080
+PORT=port_number
 
 # Timezone
 TZ=Your/Timezone
@@ -199,7 +196,6 @@ bashtail -f logs/app.log
 Common issues:
 
 Database connection failed → Check DB_URL, username, password
-Port 8080 in use → Change PORT in application.yml
 Missing JAR → Run ./gradlew clean build
 
 
