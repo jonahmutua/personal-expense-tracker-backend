@@ -132,9 +132,7 @@ public class ExpenseController {
         AppUser user = userService.findByUsername( username );
 
         updatedExpense.setId(id);
-        Expense expense = expenseService.updateExpense( updatedExpense, user.getId() )
-                .orElseThrow(() -> new  ExpenseNotFoundException("Fail to updated expense (id:" + id + "), \\" +
-                        " reason: No entry is found for this expense."));
+        Expense expense = expenseService.updateExpense( updatedExpense, user.getId() );
 
         String location = uriBuilder.path("/expenses/{id}").buildAndExpand(id).toUriString();
 
@@ -151,33 +149,48 @@ public class ExpenseController {
     }
 
     @PostMapping("/expenses")
-    public ResponseEntity<Expense> addExpense(@RequestBody Expense expense,
-                                              Authentication authentication){
+    public ResponseEntity<ApiResponseDto<Expense>> addExpense(@RequestBody Expense expense,
+                                              Authentication authentication,
+                                              UriComponentsBuilder uriBuilder){
 
         String username = authentication.getName();
         AppUser user = userService.findByUsername( username );
 
-//        if( expense.getId().equals(null) || expense.getExpenseType() < 0 || expense.getAmount() < 0 ){
-//            throw new InvalidExpenseDataException();
-//        }
-        //Todo: include URI location  in response as per Rest Good practices.
-        // ResponseEntity.created( )
-        return new ResponseEntity<>( expenseService.addExpense( expense, user.getId() ), HttpStatus.CREATED);
+        Expense createdExpense = expenseService.addExpense( expense, user.getId() );
+
+        // Build the URI location for the created resource
+        String location = uriBuilder.path("/expenses/{id}")
+                .buildAndExpand(createdExpense.getId())
+                .toUriString();
+
+        ApiResponseDto<Expense> response = new ApiResponseDto<>(
+                true,
+                "Expense created successfully",
+                createdExpense
+        );
+        return  ResponseEntity
+                .status(HttpStatus.CREATED)
+                .location(URI.create(location))
+                .body(response);
     }
 
     @DeleteMapping("/expenses/{id}")
-    public ResponseEntity<String> deleteExpense(@PathVariable("id") Long id,
+    public ResponseEntity<ApiResponseDto<Void>> deleteExpense(@PathVariable("id") Long id,
                                                 Authentication authentication){
         String username = authentication.getName();
         AppUser user = userService.findByUsername( username );
 
-        boolean isSuccess = expenseService.deleteExpense( id, user.getId() );
+        expenseService.deleteExpense( id, user.getId() );
 
-        if(!isSuccess){
-            return new ResponseEntity<>("failed to delete expense with id: "+ id, HttpStatus.NOT_FOUND);
-        }
+        ApiResponseDto<Void> response = new ApiResponseDto<>(
+                true,
+                "Expense of id: (" + id + ") was deleted successfully",
+                null
+        );
 
-        return  new ResponseEntity<>("expense with id " + id + " deleted.", HttpStatus.NO_CONTENT);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(response);
     }
 
 }

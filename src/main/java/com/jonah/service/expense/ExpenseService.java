@@ -21,7 +21,7 @@ public interface ExpenseService {
 
     public Expense addExpense(Expense expense, Long userId);
 
-    public Optional<Expense> updateExpense(Expense expense, Long userId);
+    public Expense updateExpense(Expense expense, Long userId);
 
-    public  boolean deleteExpense(Long id, Long userId);
+    public  void deleteExpense(Long id, Long userId);
 }
