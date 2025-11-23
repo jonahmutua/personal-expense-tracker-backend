@@ -9,23 +9,24 @@ on:
 #
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest       # spin  runner instance
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4    # Pull Git code into runner
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.1
         with:
-          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}   # setting up SSH connection
 
-      - name: Add VPS to known hosts
+      - name: Add VPS to known hosts # avoids prompt to add fingerprint ..
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.VPS_IP }} >> ~/.ssh/known_hosts
 
+      # Deployment
       - name: Deploy to VPS
-        env:
+        env:  # some environment variables - makes your life more relaxing
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_IP: ${{ secrets.VPS_IP }}
           APP_PATH: ${{ secrets.APP_PATH }}
@@ -37,7 +38,7 @@ jobs:
           
           echo "=== Changing to app directory ==="
           cd $APP_PATH
-          echo "Now in: $(pwd)"
+          echo "Now in: \$(pwd)"
           
           echo "=== Configuring git ==="
           git config --global --add safe.directory $APP_PATH
