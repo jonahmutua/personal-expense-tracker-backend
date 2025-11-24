@@ -1,5 +1,6 @@
 package com.jonah.service.expense.impl;
 
+import com.jonah.dto.ExpenseDto;
 import com.jonah.model.Expense;
 import com.jonah.service.expense.ExpenseService;
 import com.jonah.utils.ExpenseDataLoader;
@@ -46,7 +47,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public Expense addExpense(Expense expense, Long userId) {
+    public ExpenseDto addExpense(ExpenseDto expenseDto, Long userId) {
         return null;
     }
 

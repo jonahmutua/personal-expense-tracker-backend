@@ -9,7 +9,7 @@ spring:
   main:
     banner-mode: "off"
 
-  # <-- cloud based PostgresSQL Database configs -->
+  # <-- Database configs -->
   datasource:
     url: ${DB_URL}
     driver-class-name: org.postgresql.Driver

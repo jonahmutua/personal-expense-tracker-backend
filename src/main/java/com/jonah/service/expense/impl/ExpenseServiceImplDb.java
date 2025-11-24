@@ -1,5 +1,6 @@
 package com.jonah.service.expense.impl;
 
+import com.jonah.dto.ExpenseDto;
 import com.jonah.exception.ResourceNotFoundException;
 import com.jonah.mapper.ExpenseMapper;
 import com.jonah.model.AppUser;
@@ -86,13 +87,14 @@ public class ExpenseServiceImplDb implements ExpenseService {
     }
 
     @Override
-    public Expense addExpense(Expense expense, Long userId) {
+    public ExpenseDto addExpense(ExpenseDto expenseDto, Long userId) {
         AppUser user = userService.findUserById( userId )
                 .orElseThrow( () -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        this.validateExpense( expense);
+        Expense expense = expenseMapper.fromDto( expenseDto);
+        //this.validateExpense( expense); ToDO: remove - validation is handled in ExpenseDto class
         expense.setUser( user );
-        return expenseRepository.save( expense);
+        return expenseMapper.toDto(expenseRepository.save( expense) );
 
     }
 

@@ -1,6 +1,7 @@
 package com.jonah.controller;
 
 import com.jonah.dto.ApiResponseDto;
+import com.jonah.dto.ExpenseDto;
 import com.jonah.exception.expense.ExpenseNotFoundException;
 import com.jonah.model.AppUser;
 import com.jonah.model.Expense;
@@ -149,24 +150,24 @@ public class ExpenseController {
     }
 
     @PostMapping("/expenses")
-    public ResponseEntity<ApiResponseDto<Expense>> addExpense(@RequestBody Expense expense,
-                                              Authentication authentication,
-                                              UriComponentsBuilder uriBuilder){
+    public ResponseEntity<ApiResponseDto<ExpenseDto>> addExpense(@RequestBody ExpenseDto expenseDto,
+                                                                 Authentication authentication,
+                                                                 UriComponentsBuilder uriBuilder){
 
         String username = authentication.getName();
         AppUser user = userService.findByUsername( username );
 
-        Expense createdExpense = expenseService.addExpense( expense, user.getId() );
+        ExpenseDto createdExpenseDto = expenseService.addExpense( expenseDto, user.getId() );
 
         // Build the URI location for the created resource
         String location = uriBuilder.path("/expenses/{id}")
-                .buildAndExpand(createdExpense.getId())
+                .buildAndExpand(createdExpenseDto.getId())
                 .toUriString();
 
-        ApiResponseDto<Expense> response = new ApiResponseDto<>(
+        ApiResponseDto<ExpenseDto> response = new ApiResponseDto<>(
                 true,
                 "Expense created successfully",
-                createdExpense
+                createdExpenseDto
         );
         return  ResponseEntity
                 .status(HttpStatus.CREATED)

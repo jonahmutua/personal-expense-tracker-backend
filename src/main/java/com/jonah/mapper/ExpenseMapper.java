@@ -1,5 +1,6 @@
 package com.jonah.mapper;
 
+import com.jonah.dto.ExpenseDto;
 import com.jonah.model.Expense;
 import org.mapstruct.*;
 
@@ -14,10 +15,10 @@ public interface ExpenseMapper {
     @Mapping(target = "id", ignore = true)
     void updateExpenseFromDto(Expense source,@MappingTarget Expense destination);
 
-    // Covert expense to DTO
-    //ExpenseDto toDto(Expense expense); // TODO: create ExpenseDto
 
-    // Convert ExpenseDto to entity
-    //Expense fromDto(ExpenseDto expenseDto); // TODO: Create ExpenseDto
+    ExpenseDto toDto(Expense expense);
+
+
+    Expense fromDto(ExpenseDto expenseDto);
 
 }

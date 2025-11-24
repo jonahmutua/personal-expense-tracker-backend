@@ -1,5 +1,6 @@
 package com.jonah.service.expense;
 
+import com.jonah.dto.ExpenseDto;
 import com.jonah.model.Expense;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface ExpenseService {
 
     public List<Expense> getExpenseByCategoryAndMonth(String category, String month, Long userId);
 
-    public Expense addExpense(Expense expense, Long userId);
+    public ExpenseDto addExpense(ExpenseDto expenseDto, Long userId);
 
     public Expense updateExpense(Expense expense, Long userId);
 
