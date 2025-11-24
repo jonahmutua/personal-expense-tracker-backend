@@ -7,6 +7,7 @@ import com.jonah.model.AppUser;
 import com.jonah.model.Expense;
 import com.jonah.service.expense.ExpenseService;
 import com.jonah.service.user.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -150,7 +151,7 @@ public class ExpenseController {
     }
 
     @PostMapping("/expenses")
-    public ResponseEntity<ApiResponseDto<ExpenseDto>> addExpense(@RequestBody ExpenseDto expenseDto,
+    public ResponseEntity<ApiResponseDto<ExpenseDto>> addExpense( @Valid @RequestBody ExpenseDto expenseDto,
                                                                  Authentication authentication,
                                                                  UriComponentsBuilder uriBuilder){
 
