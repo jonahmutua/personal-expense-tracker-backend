@@ -88,66 +88,46 @@ public class ExpenseServiceImplDb implements ExpenseService {
     @Override
     public Expense addExpense(Expense expense, Long userId) {
         AppUser user = userService.findUserById( userId )
-                .orElseThrow( () -> new ResourceNotFoundException("User", userId));
+                .orElseThrow( () -> new ResourceNotFoundException(
+                        String.format("Failed to save expense: User with id=%d not found", userId), userId));
 
         // validate expense data & set expense user
         this.validateExpense( expense);
         expense.setUser( user );
 
-        try{
-            return expenseRepository.save( expense);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("Invalid Expense data " + e.getMessage(), e);
-        }
+        return expenseRepository.save( expense);
+
     }
 
     @Override
     public Expense updateExpense(Expense updatedExpense, Long userId) {
-        try {
+            Long expenseId = updatedExpense.getId();
+            // Retrieve current expense or throw exception
             Expense currentExpense =  expenseRepository
-                    .findByIdAndUserId(updatedExpense.getId(), userId)
-                    .orElseThrow(()-> new ResourceNotFoundException("Expense", updatedExpense.getId()));
+                    .findByIdAndUserId(expenseId, userId)
+                    .orElseThrow(()-> new ResourceNotFoundException(
+                            String.format("Cannot update expense: Expense with id=%d for userId=%d not found",
+                                    expenseId , userId), updatedExpense.getId()));
 
             // validate expense
             this.validateExpense( updatedExpense );
 
             // map and update
             this.expenseMapper.updateExpenseFromDto(updatedExpense, currentExpense);
+
             return expenseRepository.save(currentExpense);
-
-        } catch (DataIntegrityViolationException e){
-
-            log.error("Data integrity violation during expense update: {}", e.getMessage());
-            throw new IllegalArgumentException("Invalid expense data " + e.getMessage(), e);
-
-        } catch (ResourceNotFoundException e) {
-            log.error("Expense not found for update: {}", e.getMessage());
-            throw e;
-
-        } catch (Exception e) {
-            log.error("Unexpected error occurred while updating expense ", e);
-            throw new RuntimeException("Failed to update expense ", e);
-        }
     }
 
     @Override
     public void deleteExpense(Long id, Long userId) {
-        try {
+            // Retrieve expense or throw exception
             Expense expense = expenseRepository.findByIdAndUserId(id, userId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Expense", id));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            String.format("Cannot delete expense: Expense with id=%d for userId=%d not found", id, userId)
+                            , id));
+
+            // delete
             expenseRepository.delete( expense );
-            log.info("Expense was deleted successfully");
-
-        } catch (DataIntegrityViolationException e){
-
-            log.error("Cannot delete this expense due to constraints: {}", e.getMessage());
-            throw new IllegalArgumentException("Cannot delete this expense", e );
-
-        } catch (Exception e){
-
-            log.error("Unexpected error while deleting expense: ", e);
-            throw new RuntimeException("Cannot delete this expense", e);
-        }
     }
 
     // Validates expense data
