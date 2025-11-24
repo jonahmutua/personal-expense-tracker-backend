@@ -1,5 +1,6 @@
 package com.jonah.aspect;
 
+import com.jonah.exception.ResourceNotFoundException;
 import jakarta.persistence.Id;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -54,9 +55,16 @@ public class LoggingAspect {
         } catch (Exception e){
             long duration = System.currentTimeMillis() - start;
 
-            log.error("Exception in: {}.{}() | Duration {} ms: | Error: {}", className, methodName, duration, e.getMessage(), e);
+            switch (e) {
+                case ResourceNotFoundException ex ->
+                        log.warn("Business warning in {}.{}() | Duration: {}ms | Reason: {} ", className, methodName, duration, ex.getMessage());
 
+                case IllegalArgumentException ex ->
+                    log.warn("Invalid input / unauthorized in: {}.{}() | Duration: {}ms | Reason: {}", className, methodName, duration, ex.getMessage());
 
+                default ->
+                        log.error("Unexpected error occurred  in: {}.{}() | Duration {} ms: | Error: {}", className, methodName, duration, e.getMessage(), e);
+            }
             throw  e; // Do not swallow the exception
         }
     }
