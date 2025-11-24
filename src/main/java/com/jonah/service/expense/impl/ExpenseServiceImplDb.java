@@ -88,13 +88,10 @@ public class ExpenseServiceImplDb implements ExpenseService {
     @Override
     public Expense addExpense(Expense expense, Long userId) {
         AppUser user = userService.findUserById( userId )
-                .orElseThrow( () -> new ResourceNotFoundException(
-                        String.format("Failed to save expense: User with id=%d not found", userId), userId));
+                .orElseThrow( () -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        // validate expense data & set expense user
         this.validateExpense( expense);
         expense.setUser( user );
-
         return expenseRepository.save( expense);
 
     }
@@ -102,17 +99,12 @@ public class ExpenseServiceImplDb implements ExpenseService {
     @Override
     public Expense updateExpense(Expense updatedExpense, Long userId) {
             Long expenseId = updatedExpense.getId();
-            // Retrieve current expense or throw exception
             Expense currentExpense =  expenseRepository
                     .findByIdAndUserId(expenseId, userId)
-                    .orElseThrow(()-> new ResourceNotFoundException(
-                            String.format("Cannot update expense: Expense with id=%d for userId=%d not found",
-                                    expenseId , userId), updatedExpense.getId()));
+                    .orElseThrow(()-> new ResourceNotFoundException("Expense not found with id: " + expenseId));
 
-            // validate expense
             this.validateExpense( updatedExpense );
 
-            // map and update
             this.expenseMapper.updateExpenseFromDto(updatedExpense, currentExpense);
 
             return expenseRepository.save(currentExpense);
@@ -120,13 +112,9 @@ public class ExpenseServiceImplDb implements ExpenseService {
 
     @Override
     public void deleteExpense(Long id, Long userId) {
-            // Retrieve expense or throw exception
             Expense expense = expenseRepository.findByIdAndUserId(id, userId)
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            String.format("Cannot delete expense: Expense with id=%d for userId=%d not found", id, userId)
-                            , id));
+                    .orElseThrow(() -> new ResourceNotFoundException("Expense not found with id: " + id));
 
-            // delete
             expenseRepository.delete( expense );
     }
 
