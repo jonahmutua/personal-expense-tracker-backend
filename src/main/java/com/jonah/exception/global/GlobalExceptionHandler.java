@@ -18,7 +18,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpenseNotFoundException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleExpenseNotFoundException(ExpenseNotFoundException e){
-        log.error("Expense not found: {}", e.getMessage());
 
         ApiResponseDto<Void> response = new ApiResponseDto<>(
                 false,
@@ -33,7 +32,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidExpenseDataException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleInvalidExpenseData(InvalidExpenseDataException ex) {
-        log.error("An invalid field in Expense data: {}", ex.getMessage());
 
         ApiResponseDto<Void> response = new ApiResponseDto<>(
                 false,
@@ -48,7 +46,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpenseStorageException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleExpenseStorageException(ExpenseStorageException e) {
-        log.error("Storage error: {}", e.getMessage());
 
         ApiResponseDto<Void> response = new ApiResponseDto<>(
                 false,
@@ -64,7 +61,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleResourceNotFound(ResourceNotFoundException ex) {
-        log.error("Resource not found: {}", ex.getMessage());
 
         ApiResponseDto<Void> response = new ApiResponseDto<>(
                 false,
@@ -79,7 +75,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleUnauthorized(UnauthorizedException ex) {
-        log.error("Unauthorized: {}", ex.getMessage());
 
         ApiResponseDto<Void> response = new ApiResponseDto<>(
                 false,
@@ -94,7 +89,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleIllegalArgument(IllegalArgumentException ex) {
-        log.error("Invalid argument: {}", ex.getMessage());
 
         ApiResponseDto<Void> response = new ApiResponseDto<>(
                 false,
@@ -107,9 +101,14 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    /**
+     * Handle all unexpected exceptions
+     * This is the ONLY place we log - for truly unexpected errors
+     * AOP doesn't catch these, so we must log them here
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponseDto<Void>> handleGeneralException(Exception ex) {
-        log.error("Unexpected error: {}", ex.getMessage(), ex);
+        log.error("Unexpected error ({}): {}", ex.getClass().getSimpleName(), ex.getMessage(), ex);
 
         ApiResponseDto<Void> response = new ApiResponseDto<>(
                 false,

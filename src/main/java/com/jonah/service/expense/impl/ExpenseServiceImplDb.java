@@ -87,30 +87,17 @@ public class ExpenseServiceImplDb implements ExpenseService {
 
     @Override
     public Expense addExpense(Expense expense, Long userId) {
-        try{
         AppUser user = userService.findUserById( userId )
                 .orElseThrow( () -> new ResourceNotFoundException("User", userId));
 
-            // validate expense date
-            this.validateExpense( expense);
-            expense.setUser( user );
+        // validate expense data & set expense user
+        this.validateExpense( expense);
+        expense.setUser( user );
+
+        try{
             return expenseRepository.save( expense);
-
         } catch (DataIntegrityViolationException e) {
-            log.error("Error wile saving expense: {}", e.getMessage());
             throw new IllegalArgumentException("Invalid Expense data " + e.getMessage(), e);
-
-        } catch (ResourceNotFoundException e){
-            log.error("User not found: {}", e.getMessage());
-            throw e;
-
-        } catch (IllegalArgumentException e){
-            log.error("Invalid expense data: {}", e.getMessage());
-            throw e;
-
-        } catch (Exception e){
-            log.error("Unexpected error while creating expense: {} ", e.getMessage());
-            throw  new RuntimeException("Unexpected error while creating expense", e);
         }
     }
 
