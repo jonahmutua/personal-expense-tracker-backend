@@ -19,6 +19,9 @@ import java.util.Map;
 @Component
 @Slf4j
 public class LoggingAspect {
+
+    private  static  final  ThreadLocal<Boolean> exceptionLogged = ThreadLocal.withInitial(()->false);
+
     @Pointcut("execution(* com.jonah.service..*(..))")
     public void servicePointcut() {
 
@@ -55,17 +58,22 @@ public class LoggingAspect {
         } catch (Exception e){
             long duration = System.currentTimeMillis() - start;
 
-            switch (e) {
-                case ResourceNotFoundException ex ->
-                        log.warn("Business warning in {}.{}() | Duration: {}ms | Reason: {} ", className, methodName, duration, ex.getMessage());
+            if(!exceptionLogged.get()) {
+                switch (e) {
+                    case ResourceNotFoundException ex ->
+                            log.warn("Business warning in {}.{}() | Duration: {}ms | Reason: {} ", className, methodName, duration, ex.getMessage());
 
-                case IllegalArgumentException ex ->
-                    log.warn("Invalid input / unauthorized in: {}.{}() | Duration: {}ms | Reason: {}", className, methodName, duration, ex.getMessage());
+                    case IllegalArgumentException ex ->
+                            log.warn("Invalid input / unauthorized in: {}.{}() | Duration: {}ms | Reason: {}", className, methodName, duration, ex.getMessage());
 
-                default ->
-                        log.error("Unexpected error occurred  in: {}.{}() | Duration {} ms: | Error: {}", className, methodName, duration, e.getMessage(), e);
+                    default ->
+                            log.error("Unexpected error occurred  in: {}.{}() | Duration {} ms: | Error: {}", className, methodName, duration, e.getMessage(), e);
+                }
+                exceptionLogged.set(true);
             }
             throw  e; // Do not swallow the exception
+        } finally {
+            exceptionLogged.remove();
         }
     }
 
