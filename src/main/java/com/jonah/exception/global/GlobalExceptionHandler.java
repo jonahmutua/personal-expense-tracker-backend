@@ -130,7 +130,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponseDto<Map<String, String>>> handleValidationErrors(MethodArgumentNotValidException ex) {
-        log.warn("Validation failed: {}", ex.getMessage());
+
         // Collect field errors
         Map<String, String> errors = ex.getBindingResult()
                 .getFieldErrors()
@@ -139,6 +139,8 @@ public class GlobalExceptionHandler {
                         fe -> fe.getField(),
                         fe -> fe.getDefaultMessage()
                 ));
+
+        log.warn("Validation failed: {}",errors);
 
         ApiResponseDto<Map<String, String>> response = new ApiResponseDto<>(
                 false,
