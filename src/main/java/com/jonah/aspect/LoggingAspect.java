@@ -28,12 +28,17 @@ public class LoggingAspect {
 
     }
 
+    @Pointcut("execution(* com.jonah.controller..*(..))")
+    public void controllerPointcut(){
+
+    }
+
     /* Single @Around advice handles everything:* - Logs method entry with arguments
      * - Logs method exit with return value
      * - Logs exceptions with stack trace
      * - Tracks execution time
     */
-    @Around("servicePointcut()")
+    @Around("servicePointcut() ||  controllerPointcut()")
     public Object logServiceMethods(ProceedingJoinPoint joinPoint) throws  Throwable {
         String methodName = joinPoint.getSignature().getName();
         String className = joinPoint.getTarget().getClass().getSimpleName();
