@@ -8,6 +8,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -65,6 +66,9 @@ public class LoggingAspect {
 
                     case IllegalArgumentException ex ->
                             log.warn("Invalid input / unauthorized in: {}.{}() | Duration: {}ms | Reason: {}", className, methodName, duration, ex.getMessage());
+
+                    case MethodArgumentNotValidException ex ->
+                        log.warn("Invalid input in: {}.{}() | Duration: {}ms | Reason: {}",className, methodName, duration, ex.getMessage());
 
                     default ->
                             log.error("Unexpected error occurred  in: {}.{}() | Duration {} ms: | Error: {}", className, methodName, duration, e.getMessage(), e);
