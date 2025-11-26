@@ -18,7 +18,7 @@ public interface ExpenseService {
 
     public List<Expense> getExpenseByDay(String date, Long userId);
 
-    public List<Expense> getExpenseByCategoryAndMonth(String category, String month, Long userId);
+    public List<ExpenseDto> getExpenseByCategoryAndMonth(String category, String month, Long userId);
 
     public ExpenseDto addExpense(ExpenseDto expenseDto, Long userId);
 

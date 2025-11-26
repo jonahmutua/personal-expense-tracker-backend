@@ -2,6 +2,7 @@ package com.jonah.service.expense.impl;
 
 import com.jonah.dto.ExpenseDto;
 import com.jonah.exception.ResourceNotFoundException;
+import com.jonah.exception.expense.ExpenseNotFoundException;
 import com.jonah.mapper.ExpenseMapper;
 import com.jonah.model.AppUser;
 import com.jonah.model.Expense;
@@ -78,12 +79,25 @@ public class ExpenseServiceImplDb implements ExpenseService {
     }
 
     @Override
-    public List<Expense> getExpenseByCategoryAndMonth(String category, String month, Long userId) {
+    public List<ExpenseDto> getExpenseByCategoryAndMonth(String category, String month, Long userId) {
 
-       return expenseRepository.findByUserIdOrderByDate( userId ).stream()
-               .filter( expense -> expense.getCategory().equalsIgnoreCase( category )
-                    && expense.getDate().startsWith( month ) )
-               .toList();
+//       return expenseRepository.findByUserIdOrderByDate( userId ).stream()
+//               .filter( expense -> expense.getCategory().equalsIgnoreCase( category )
+//                    && expense.getDate().startsWith( month ) )
+//               .toList();
+
+        //return expenseRepository.findByUserIdOrderByDate( userId ).stream()
+
+         List<Expense> expenses = expenseRepository.findByCategoryAndMonthAndUserId(
+                category, month, userId);
+
+         if( expenses.isEmpty()) {
+             //throw new ExpenseNotFoundException("No expenses found for  category:  " + category + " and month: " + month );
+             throw new ResourceNotFoundException("No expense(s) that match criteria are found for user id: " + userId);
+         }
+
+         return expenseMapper.toListDto( expenses );
+
     }
 
     @Override

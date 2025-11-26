@@ -42,7 +42,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public List<Expense> getExpenseByCategoryAndMonth(String category, String month, Long userId) {
+    public List<ExpenseDto> getExpenseByCategoryAndMonth(String category, String month, Long userId) {
         return List.of();
     }
 

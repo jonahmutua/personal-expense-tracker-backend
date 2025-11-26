@@ -109,18 +109,27 @@ public class ExpenseController {
     }
 
     @GetMapping("/expenses/categories/{category}/month")
-    public ResponseEntity<List<Expense>> getExpenseByCategoriesAndMonth(@PathVariable("category") String category,
+    public ResponseEntity<ApiResponseDto<List<ExpenseDto>>> getExpenseByCategoriesAndMonth(@PathVariable("category") String category,
                                                                         @RequestParam("month") String month,
+                                                                        UriComponentsBuilder uriBuilder,
                                                                         Authentication authentication){
         String username = authentication.getName();
         AppUser user = userService.findByUsername( username );
 
-        List<Expense> expenses = expenseService.getExpenseByCategoryAndMonth(category, month, user.getId() );
+        List<ExpenseDto> expenses = expenseService.getExpenseByCategoryAndMonth(category, month, user.getId() );
 
-        if( expenses.isEmpty()) {
-            throw new ExpenseNotFoundException("No expenses found for  category:  " + category + " and month: " + month );
-        }
-        return  ResponseEntity.ok( expenses );
+        String location = uriBuilder.path("/expenses/categories/{category}/month").buildAndExpand(category).toUriString();
+
+        ApiResponseDto<List<ExpenseDto>> response = new ApiResponseDto<>(
+                true,
+                "Found expense(s)",
+                expenses,
+                location
+        );
+        return  ResponseEntity
+                .ok()
+                .location(URI.create(location))
+                .body( response);
     }
 
     @PutMapping("/expenses/{id}")

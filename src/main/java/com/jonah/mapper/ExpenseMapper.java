@@ -4,6 +4,8 @@ import com.jonah.dto.ExpenseDto;
 import com.jonah.model.Expense;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(
         componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
@@ -20,5 +22,7 @@ public interface ExpenseMapper {
 
 
     Expense fromDto(ExpenseDto expenseDto);
+
+    List<ExpenseDto> toListDto(List<Expense> expense);
 
 }
