@@ -1,8 +1,8 @@
 package com.jonah.service.auth.impl;
 
-import com.jonah.dto.AppUserDto;
-import com.jonah.dto.AuthDto;
-import com.jonah.dto.AuthResponseDto;
+import com.jonah.dto.request.AppUserDto;
+import com.jonah.dto.request.AuthDto;
+import com.jonah.dto.response.AuthResponseDto;
 import com.jonah.model.AppUser;
 import com.jonah.model.Role;
 import com.jonah.security.JwtUtil;

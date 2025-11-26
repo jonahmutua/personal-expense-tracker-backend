@@ -1,14 +1,10 @@
 package com.jonah.controller;
 
-import com.jonah.dto.AppUserDto;
-import com.jonah.dto.AuthDto;
-import com.jonah.dto.AuthResponseDto;
-import com.jonah.model.AppUser;
+import com.jonah.dto.request.AppUserDto;
+import com.jonah.dto.request.AuthDto;
+import com.jonah.dto.response.AuthResponseDto;
 import com.jonah.service.auth.AuthService;
-import com.jonah.service.user.UserService;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;

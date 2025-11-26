@@ -1,6 +1,6 @@
 package com.jonah.exception.global;
 
-import com.jonah.dto.ApiResponseDto;
+import com.jonah.dto.response.ApiResponseDto;
 import com.jonah.exception.ResourceNotFoundException;
 import com.jonah.exception.UnauthorizedException;
 import com.jonah.exception.expense.ExpenseNotFoundException;

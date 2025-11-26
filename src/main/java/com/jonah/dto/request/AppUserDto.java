@@ -1,4 +1,4 @@
-package com.jonah.dto;
+package com.jonah.dto.request;
 
 import lombok.Data;
 

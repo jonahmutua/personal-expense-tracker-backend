@@ -1,9 +1,8 @@
 package com.jonah.service.auth;
 
-import com.jonah.dto.AppUserDto;
-import com.jonah.dto.AuthDto;
-import com.jonah.dto.AuthResponseDto;
-import com.jonah.model.AppUser;
+import com.jonah.dto.request.AppUserDto;
+import com.jonah.dto.request.AuthDto;
+import com.jonah.dto.response.AuthResponseDto;
 
 public interface AuthService {
     public AuthResponseDto registerUser(AppUserDto appUserDto);

@@ -1,19 +1,21 @@
 package com.jonah.service.expense.impl;
 
-import com.jonah.dto.ExpenseDto;
+import com.jonah.dto.filter.ExpenseFilterDto;
+import com.jonah.dto.request.ExpenseDto;
 import com.jonah.exception.ResourceNotFoundException;
-import com.jonah.exception.expense.ExpenseNotFoundException;
 import com.jonah.mapper.ExpenseMapper;
 import com.jonah.model.AppUser;
 import com.jonah.model.Expense;
 import com.jonah.repository.ExpenseRepository;
-import com.jonah.repository.UserRepository;
 import com.jonah.service.expense.ExpenseService;
 import com.jonah.service.user.UserService;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -125,6 +127,24 @@ public class ExpenseServiceImplDb implements ExpenseService {
 
             return expenseRepository.save(currentExpense);
     }
+    @Override
+    public List<ExpenseDto> filterExpenses(ExpenseFilterDto filterDto, Long userId) {
+
+        List<Expense> expenses = expenseRepository.findByUserIdOrderByDate( userId );
+
+        // apply filters
+        List<Expense> filtered = expenses.stream()
+                .filter(expense -> filterByMonth(expense, filterDto.getMonth()) )
+                .filter( expense -> filterByCategory(expense, filterDto.getCategory()))
+                .filter(expense -> filterByAmount(expense, filterDto.getMinAmount(), filterDto.getMaxAmount()))
+                .filter(expense -> filterByDateRange(expense, filterDto.getStartDate(), filterDto.getEndDate()))
+                .filter(expense -> filterByAccount(expense, filterDto.getAccount()))
+                .toList(); // ToDo: explore Collectors...
+        // sort
+        filtered = sortExpenses(filtered, filterDto.getSortBy(), filterDto.getSortOrder() );
+
+        return expenseMapper.toListDto( filtered ) ;
+    }
 
     @Override
     public void deleteExpense(Long id, Long userId) {
@@ -134,7 +154,7 @@ public class ExpenseServiceImplDb implements ExpenseService {
             expenseRepository.delete( expense );
     }
 
-    // Validates expense data
+    // private methods
     private void validateExpense(Expense expense){
         if(expense.getAmount() == null || expense.getAmount() < 0 ){
             throw new IllegalArgumentException("Expense amount must be grater than 0");
@@ -146,4 +166,55 @@ public class ExpenseServiceImplDb implements ExpenseService {
             throw new IllegalArgumentException("Expense date is required");
         }
     }
+
+    private List<Expense> sortExpenses(List<Expense> expenses, String sortBy, String sortOrder) {
+        if( sortBy == null) {
+            return  expenses;
+        }
+
+        boolean ascending = !"desc".equalsIgnoreCase( sortOrder);
+
+        return expenses.stream()
+                .sorted((e1,e2) -> {
+                    int comparison = switch (sortBy.toLowerCase()){
+                        case "amount" -> e1.getAmount().compareTo(e2.getAmount());
+                        case "category" -> e1.getCategory().compareTo(e2.getCategory());
+                        default -> e1.getDate().compareTo(e2.getDate());
+                    };
+                    return ascending ? comparison : -comparison;
+        }).toList();
+    }
+
+    private boolean filterByAccount(Expense expense, @NotBlank(message = "Account is required ") String account) {
+        return account == null || expense.getAccount().equalsIgnoreCase(account);
+    }
+
+    private boolean filterByDateRange(Expense expense, String startDate, String endDate) {
+        if( startDate !=null && expense.getDate().compareTo(startDate) < 0 ) {
+            return  false;
+        }
+        if( endDate != null && expense.getDate().compareTo(endDate) > 0 ) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean filterByAmount(Expense expense, Double minAmount, Double maxAmount) {
+        if(minAmount != null && expense.getAmount() < minAmount){
+            return  false;
+        }
+        if( maxAmount != null && expense.getAmount() > maxAmount){
+            return false;
+        }
+        return true;
+    }
+
+    private boolean filterByCategory(Expense expense, String category) {
+        return category == null || expense.getCategory().equalsIgnoreCase( category);
+    }
+
+    private boolean filterByMonth(Expense expense, String month) {
+        return month == null || expense.getDate().startsWith( month);
+    }
+
 }

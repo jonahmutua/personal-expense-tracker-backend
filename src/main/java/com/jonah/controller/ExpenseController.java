@@ -1,7 +1,8 @@
 package com.jonah.controller;
 
-import com.jonah.dto.ApiResponseDto;
-import com.jonah.dto.ExpenseDto;
+import com.jonah.dto.filter.ExpenseFilterDto;
+import com.jonah.dto.response.ApiResponseDto;
+import com.jonah.dto.request.ExpenseDto;
 import com.jonah.exception.expense.ExpenseNotFoundException;
 import com.jonah.model.AppUser;
 import com.jonah.model.Expense;
@@ -72,8 +73,10 @@ public class ExpenseController {
                                                   UriComponentsBuilder uriBuilder){
          String username = authentication.getName();
          AppUser user = userService.findByUsername( username );
+
          Expense expense = expenseService.getExpenseById( id, user.getId() )
                 .orElseThrow(()->new ExpenseNotFoundException("No expense found for id: "+ id) );
+
         String location = uriBuilder.path("/expenses/{id}")
                 .buildAndExpand(id)
                 .toUriString();
@@ -89,8 +92,6 @@ public class ExpenseController {
                 .ok()
                 .location(URI.create( location))
                 .body(response);
-
-        //return ResponseEntity.ok( expense ); //new ResponseEntity<>(expense, HttpStatus.OK); // Found the expense with matching id
     }
 
     @GetMapping("/expenses/day/{date}")
@@ -118,7 +119,10 @@ public class ExpenseController {
 
         List<ExpenseDto> expenses = expenseService.getExpenseByCategoryAndMonth(category, month, user.getId() );
 
-        String location = uriBuilder.path("/expenses/categories/{category}/month").buildAndExpand(category).toUriString();
+        String location = uriBuilder
+                .path("/expenses/categories/{category}/month")
+                .queryParam("month", month)
+                .buildAndExpand(category).toUriString();
 
         ApiResponseDto<List<ExpenseDto>> response = new ApiResponseDto<>(
                 true,
@@ -197,4 +201,26 @@ public class ExpenseController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/expenses/filter")
+    public ResponseEntity<ApiResponseDto<List<ExpenseDto>>> filterExpenses(@RequestBody ExpenseFilterDto filter,
+                                                                           Authentication  authentication,
+                                                                           UriComponentsBuilder uriBuilder){
+
+        String username = authentication.getName();
+        AppUser user = userService.findByUsername( username );
+
+        List<ExpenseDto> expenses = expenseService.filterExpenses(filter, user.getId());
+
+        // ToDO : Build uri location
+        ApiResponseDto<List<ExpenseDto>> response = new ApiResponseDto<>(
+                true,
+                "Expenses retrieved successfully",
+                expenses
+        );
+
+        return ResponseEntity
+                .ok()
+                .body( response);
+
+    }
 }

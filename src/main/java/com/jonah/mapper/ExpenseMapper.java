@@ -1,6 +1,6 @@
 package com.jonah.mapper;
 
-import com.jonah.dto.ExpenseDto;
+import com.jonah.dto.request.ExpenseDto;
 import com.jonah.model.Expense;
 import org.mapstruct.*;
 

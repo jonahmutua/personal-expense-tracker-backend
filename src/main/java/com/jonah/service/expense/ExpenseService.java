@@ -1,6 +1,7 @@
 package com.jonah.service.expense;
 
-import com.jonah.dto.ExpenseDto;
+import com.jonah.dto.filter.ExpenseFilterDto;
+import com.jonah.dto.request.ExpenseDto;
 import com.jonah.model.Expense;
 
 import java.util.List;
@@ -23,6 +24,8 @@ public interface ExpenseService {
     public ExpenseDto addExpense(ExpenseDto expenseDto, Long userId);
 
     public Expense updateExpense(Expense expense, Long userId);
+
+    public List<ExpenseDto> filterExpenses(ExpenseFilterDto filterDto, Long userId);
 
     public  void deleteExpense(Long id, Long userId);
 }

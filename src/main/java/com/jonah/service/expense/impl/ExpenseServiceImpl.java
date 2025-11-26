@@ -1,15 +1,14 @@
 package com.jonah.service.expense.impl;
 
-import com.jonah.dto.ExpenseDto;
+import com.jonah.dto.filter.ExpenseFilterDto;
+import com.jonah.dto.request.ExpenseDto;
 import com.jonah.model.Expense;
 import com.jonah.service.expense.ExpenseService;
-import com.jonah.utils.ExpenseDataLoader;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @Profile("json")
@@ -54,6 +53,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public Expense updateExpense(Expense expense, Long userId) {
         return null;
+    }
+
+    @Override
+    public List<ExpenseDto> filterExpenses(ExpenseFilterDto filterDto, Long userId) {
+        return List.of();
     }
 
     @Override

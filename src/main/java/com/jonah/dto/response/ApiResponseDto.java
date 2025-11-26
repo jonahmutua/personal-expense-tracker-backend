@@ -1,9 +1,8 @@
-package com.jonah.dto;
+package com.jonah.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 // Generice API Respose DTO with URI location
 @Data
