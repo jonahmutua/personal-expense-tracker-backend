@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -168,21 +169,25 @@ public class ExpenseServiceImplDb implements ExpenseService {
     }
 
     private List<Expense> sortExpenses(List<Expense> expenses, String sortBy, String sortOrder) {
-        if( sortBy == null) {
+        if( sortBy == null || expenses == null || expenses.isEmpty()) {
             return  expenses;
         }
 
         boolean ascending = !"desc".equalsIgnoreCase( sortOrder);
 
+        // Avoid null pointer exception if expense field are null
+        Comparator<Expense> comparator = switch (sortBy.toLowerCase()){
+            case "amount" -> Comparator.comparing(Expense::getAmount, Comparator.nullsLast(Double::compare));
+            case "category" -> Comparator.comparing(Expense::getCategory, Comparator.nullsLast(String::compareTo));
+            default -> Comparator.comparing(Expense::getDate, Comparator.nullsLast(String::compareTo));
+        };
+
+        if(!ascending) {
+            comparator = comparator.reversed();
+        }
         return expenses.stream()
-                .sorted((e1,e2) -> {
-                    int comparison = switch (sortBy.toLowerCase()){
-                        case "amount" -> e1.getAmount().compareTo(e2.getAmount());
-                        case "category" -> e1.getCategory().compareTo(e2.getCategory());
-                        default -> e1.getDate().compareTo(e2.getDate());
-                    };
-                    return ascending ? comparison : -comparison;
-        }).toList();
+                .sorted(comparator)
+                .toList();
     }
 
     private boolean filterByAccount(Expense expense, @NotBlank(message = "Account is required ") String account) {
