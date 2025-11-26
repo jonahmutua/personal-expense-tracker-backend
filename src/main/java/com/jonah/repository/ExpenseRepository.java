@@ -22,7 +22,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
      */
     @Query(""" 
             SELECT e FROM Expense e 
-                WHERE e.userId = :userId 
+                WHERE e.user.id = :userId 
                     AND LOWER(e.category) = LOWER(:category) 
                     AND e.date LIKE CONCAT(:month,'%')
                 ORDER BY e.date DESC
