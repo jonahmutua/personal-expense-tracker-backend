@@ -186,14 +186,14 @@ public class ExpenseServiceImplDb implements ExpenseService {
     }
 
     private boolean filterByAccount(Expense expense, @NotBlank(message = "Account is required ") String account) {
-        return account == null || expense.getAccount().equalsIgnoreCase(account);
+        return account == null || expense.getAccount() != null && expense.getAccount().equalsIgnoreCase(account);
     }
 
     private boolean filterByDateRange(Expense expense, String startDate, String endDate) {
-        if( startDate !=null && expense.getDate().compareTo(startDate) < 0 ) {
+        if( startDate !=null && expense.getDate() != null && expense.getDate().compareTo(startDate) < 0 ) {
             return  false;
         }
-        if( endDate != null && expense.getDate().compareTo(endDate) > 0 ) {
+        if( endDate != null && expense.getDate() != null && expense.getDate().compareTo(endDate) > 0 ) {
             return false;
         }
         return true;
@@ -210,11 +210,11 @@ public class ExpenseServiceImplDb implements ExpenseService {
     }
 
     private boolean filterByCategory(Expense expense, String category) {
-        return category == null || expense.getCategory().equalsIgnoreCase( category);
+        return category == null || expense.getCategory() != null && expense.getCategory().equalsIgnoreCase( category);
     }
 
     private boolean filterByMonth(Expense expense, String month) {
-        return month == null || expense.getDate().startsWith( month);
+        return month == null || expense.getDate() != null && expense.getDate().startsWith( month);
     }
 
 }
