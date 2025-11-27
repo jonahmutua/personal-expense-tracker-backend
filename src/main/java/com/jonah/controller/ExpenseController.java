@@ -31,11 +31,22 @@ public class ExpenseController {
     }
 
     @GetMapping("/expenses")
-    public ResponseEntity<List<Expense>> getAllUserExpenses(Authentication authentication){
+    public ResponseEntity<ApiResponseDto<List<ExpenseDto>>> getAllUserExpenses(Authentication authentication){
         String username = authentication.getName();
         AppUser user = userService.findByUsername( username );
 
-        return ResponseEntity.ok( expenseService.getAllUserExpenses( user.getId() ));
+        List<ExpenseDto> expenses = expenseService.getAllUserExpenses( user.getId() );
+
+        ApiResponseDto<List<ExpenseDto>> response = new ApiResponseDto<>(
+                true,
+                "Successfully retrieved expenses",
+                expenses
+        );
+        //String location = uriBuilder ToDo: build location URI
+
+        return ResponseEntity
+                .ok()
+                .body(response);
     }
 
     @GetMapping("/expenses/categories")

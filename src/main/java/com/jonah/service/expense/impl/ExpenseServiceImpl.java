@@ -15,7 +15,7 @@ import java.util.Optional;
 public class ExpenseServiceImpl implements ExpenseService {
     // TODO: implementation to support load/update from local json file ->> mimics  real DB
     @Override
-    public List<Expense> getAllUserExpenses(Long userId) {
+    public List<ExpenseDto> getAllUserExpenses(Long userId) {
         return List.of();
     }
 

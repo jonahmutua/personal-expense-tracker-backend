@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface ExpenseService {
 
-    public List<Expense> getAllUserExpenses(Long userId);
+    public List<ExpenseDto> getAllUserExpenses(Long userId);
 
     public List<String> getExpenseCategories(Long userId);
 

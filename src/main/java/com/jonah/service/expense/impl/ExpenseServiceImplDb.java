@@ -40,9 +40,8 @@ public class ExpenseServiceImplDb implements ExpenseService {
     }
 
     @Override
-    public List<Expense> getAllUserExpenses(Long userId) {
-
-        return new ArrayList<>( expenseRepository.findByUserIdOrderByDate( userId ) );
+    public List<ExpenseDto> getAllUserExpenses(Long userId) {
+        return  expenseMapper.toListDto( expenseRepository.findByUserIdOrderByDate( userId ) );
     }
 
     @Override
@@ -83,13 +82,6 @@ public class ExpenseServiceImplDb implements ExpenseService {
 
     @Override
     public List<ExpenseDto> getExpenseByCategoryAndMonth(String category, String month, Long userId) {
-
-//       return expenseRepository.findByUserIdOrderByDate( userId ).stream()
-//               .filter( expense -> expense.getCategory().equalsIgnoreCase( category )
-//                    && expense.getDate().startsWith( month ) )
-//               .toList();
-
-        //return expenseRepository.findByUserIdOrderByDate( userId ).stream()
 
          List<Expense> expenses = expenseRepository.findByCategoryAndMonthAndUserId(
                 category, month, userId);
@@ -175,7 +167,7 @@ public class ExpenseServiceImplDb implements ExpenseService {
 
         boolean ascending = !"desc".equalsIgnoreCase( sortOrder);
 
-        // Avoid null pointer exception if expense field are null
+        // Avoid null pointer exception if expense fields are null
         Comparator<Expense> comparator = switch (sortBy.toLowerCase()){
             case "amount" -> Comparator.comparing(Expense::getAmount, Comparator.nullsLast(Double::compare));
             case "category" -> Comparator.comparing(Expense::getCategory, Comparator.nullsLast(String::compareTo));
