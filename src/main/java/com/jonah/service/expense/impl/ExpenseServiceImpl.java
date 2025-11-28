@@ -51,7 +51,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public Expense updateExpense(Expense expense, Long userId) {
+    public ExpenseDto updateExpense(ExpenseDto expense, Long userId) {
         return null;
     }
 

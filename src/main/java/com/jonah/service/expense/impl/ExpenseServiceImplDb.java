@@ -108,17 +108,17 @@ public class ExpenseServiceImplDb implements ExpenseService {
     }
 
     @Override
-    public Expense updateExpense(Expense updatedExpense, Long userId) {
+    public ExpenseDto updateExpense(ExpenseDto updatedExpense, Long userId) {
             Long expenseId = updatedExpense.getId();
             Expense currentExpense =  expenseRepository
                     .findByIdAndUserId(expenseId, userId)
                     .orElseThrow(()-> new ResourceNotFoundException("Expense not found with id: " + expenseId));
 
-            this.validateExpense( updatedExpense );
+            //this.validateExpense( updatedExpense );
 
             this.expenseMapper.updateExpenseFromDto(updatedExpense, currentExpense);
 
-            return expenseRepository.save(currentExpense);
+            return expenseMapper.toDto(expenseRepository.save(currentExpense));
     }
     @Override
     public List<ExpenseDto> filterExpenses(ExpenseFilterDto filterDto, Long userId) {

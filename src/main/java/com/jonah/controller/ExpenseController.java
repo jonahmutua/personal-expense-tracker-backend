@@ -148,9 +148,9 @@ public class ExpenseController {
     }
 
     @PutMapping("/expenses/{id}")
-    public ResponseEntity<ApiResponseDto<Expense>> updateExpense(
+    public ResponseEntity<ApiResponseDto<ExpenseDto>> updateExpense(
                     @PathVariable Long id,
-                    @RequestBody Expense updatedExpense,
+                    @RequestBody ExpenseDto updatedExpense,
                     Authentication authentication,
                     UriComponentsBuilder uriBuilder){
 
@@ -158,11 +158,11 @@ public class ExpenseController {
         AppUser user = userService.findByUsername( username );
 
         updatedExpense.setId(id);
-        Expense expense = expenseService.updateExpense( updatedExpense, user.getId() );
+        ExpenseDto expense = expenseService.updateExpense( updatedExpense, user.getId() );
 
         String location = uriBuilder.path("/expenses/{id}").buildAndExpand(id).toUriString();
 
-        ApiResponseDto<Expense> response = new ApiResponseDto<>(
+        ApiResponseDto<ExpenseDto> response = new ApiResponseDto<>(
                 true,
                 "Successfully Updated Expense",
                 expense,

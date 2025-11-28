@@ -23,7 +23,7 @@ public interface ExpenseService {
 
     public ExpenseDto addExpense(ExpenseDto expenseDto, Long userId);
 
-    public Expense updateExpense(Expense expense, Long userId);
+    public ExpenseDto updateExpense(ExpenseDto expense, Long userId);
 
     public List<ExpenseDto> filterExpenses(ExpenseFilterDto filterDto, Long userId);
 

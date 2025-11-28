@@ -15,7 +15,7 @@ public interface ExpenseMapper {
     // updates expense from dto - only provided fields are mapped, null fields will be ignored
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "id", ignore = true)
-    void updateExpenseFromDto(Expense source,@MappingTarget Expense destination);
+    void updateExpenseFromDto(ExpenseDto source,@MappingTarget Expense destination);
 
 
     ExpenseDto toDto(Expense expense);
