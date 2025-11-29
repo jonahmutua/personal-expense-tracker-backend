@@ -16,7 +16,7 @@ public class ExceptionHandlingAspect {
     private static final ThreadLocal<Boolean> exceptionLogged =
             ThreadLocal.withInitial(() -> false);
 
-    @Pointcut("@annotation(com.jonah.annotation.Log) || @target(com.jonah.annotation.Log)")
+    @Pointcut("@annotation(com.jonah.annotation.Log) || @within(com.jonah.annotation.Log)")
     public void loggedMethods() {
     }
 

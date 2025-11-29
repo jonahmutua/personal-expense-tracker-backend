@@ -31,7 +31,7 @@ public class LoggingAspect {
     /**
      * Pointcut 2: Methods in classes annotated with @Log
      */
-    @Pointcut("@target(com.jonah.annotation.Log)")
+    @Pointcut("@within(com.jonah.annotation.Log)")
     public void classLevelLog() {}
 
     /**
