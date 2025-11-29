@@ -1,5 +1,6 @@
 package com.jonah.controller;
 
+import com.jonah.aspect.annotation.Log;
 import com.jonah.dto.filter.ExpenseFilterDto;
 import com.jonah.dto.response.ApiResponseDto;
 import com.jonah.dto.request.ExpenseDto;
@@ -20,6 +21,7 @@ import java.util.List;
 
 // Consider Creating a generic ApiResponse DTO Class to encpsulate responses . This makes api responses uniform
 @RestController
+@Log
 public class ExpenseController {
 
     private final ExpenseService expenseService;

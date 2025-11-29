@@ -1,5 +1,6 @@
 package com.jonah.service.expense.impl;
 
+import com.jonah.aspect.annotation.Log;
 import com.jonah.dto.filter.ExpenseFilterDto;
 import com.jonah.dto.request.ExpenseDto;
 import com.jonah.exception.ResourceNotFoundException;
@@ -26,6 +27,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 @Profile("db")
+@Log
 public class ExpenseServiceImplDb implements ExpenseService {
 
     @Autowired

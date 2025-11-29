@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -12,14 +13,12 @@ import org.springframework.stereotype.Component;
 public class PerformanceAspect {
 
     private static final long SLOW_THRESHOLD_MS = 500;
-    private ProceedingJoinPoint joinPoint;
 
-    /**
-     * Monitors execution time and logs slow operations
-     */
-    @Around("execution(* com.jonah.service..*(..))")
+    @Pointcut("@annotation(com.jonah.annotation.Log) || @target(com.jonah.annotation.Log)")
+    public void loggedMethods() {}
+
+    @Around("loggedMethods()")
     public Object monitorPerformance(ProceedingJoinPoint joinPoint) throws Throwable {
-        this.joinPoint = joinPoint;
 
         String methodName = joinPoint.getSignature().getName();
         String className = joinPoint.getTarget().getClass().getSimpleName();
@@ -32,10 +31,10 @@ public class PerformanceAspect {
             long duration = System.currentTimeMillis() - startTime;
 
             if (duration > SLOW_THRESHOLD_MS) {
-                log.warn("SLOW: {}.{}() | execution time: {} ms",
+                log.warn("SLOW: {}.{}() | Execution time {} ms",
                         className, methodName, duration);
             } else {
-                log.info("{}.{}() | execution time: {} ms",
+                log.debug("{}.{}() | Execution time: {} ms",
                         className, methodName, duration);
             }
         }
