@@ -42,7 +42,6 @@ public class LoggingAspect {
 
         // Check if logging is enabled (method level can disable it)
         if (!isLoggingEnabled(joinPoint)) {
-            log.info("Logging not enabled for this method");
             return joinPoint.proceed();
         }
 
