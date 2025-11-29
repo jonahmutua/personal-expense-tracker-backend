@@ -25,13 +25,13 @@ public class LoggingAspect {
     /**
      * Pointcut 1: Methods directly annotated with @Log
      */
-    @Pointcut("@annotation(com.jonah.annotation.Log)")
+    @Pointcut("@annotation(com.jonah.aspect.annotation.Log)")
     public void methodLevelLog() {}
 
     /**
      * Pointcut 2: Methods in classes annotated with @Log
      */
-    @Pointcut("@within(com.jonah.annotation.Log)")
+    @Pointcut("@within(com.jonah.aspect.annotation.Log)")
     public void classLevelLog() {}
 
     /**

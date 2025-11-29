@@ -14,7 +14,7 @@ public class PerformanceAspect {
 
     private static final long SLOW_THRESHOLD_MS = 500;
 
-    @Pointcut("@annotation(com.jonah.annotation.Log) || @within(com.jonah.annotation.Log)")
+    @Pointcut("@annotation(com.jonah.aspect.annotation.Log) || @within(com.jonah.aspect.annotation.Log)")
     public void loggedMethods() {}
 
     @Around("loggedMethods()")

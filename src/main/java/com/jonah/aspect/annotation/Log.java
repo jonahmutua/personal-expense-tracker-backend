@@ -10,7 +10,7 @@ import java.lang.annotation.*;
  *
  * Method level overrides class level
  */
-@Target({ElementType.TYPE, ElementType.METHOD})  // ← Both CLASS and METHOD
+@Target({ElementType.TYPE, ElementType.METHOD})  // Both CLASS and METHOD
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Log {
