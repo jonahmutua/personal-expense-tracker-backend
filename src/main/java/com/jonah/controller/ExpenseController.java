@@ -20,8 +20,8 @@ import java.net.URI;
 import java.util.List;
 
 // Consider Creating a generic ApiResponse DTO Class to encpsulate responses . This makes api responses uniform
-@RestController
 @Log
+@RestController
 public class ExpenseController {
 
     private final ExpenseService expenseService;

@@ -52,7 +52,7 @@ public class ExceptionHandlingAspect {
             case IllegalArgumentException ex -> log.warn("Invalid input in {}.{}() | Execution time: {}ms | Reason: {}",
                     className, methodName, duration, ex.getMessage());
 
-            default -> log.error("✗ Unexpected error in {}.{}() | Execution time: {}ms | Error: {}",
+            default -> log.error("Unexpected error in {}.{}() | Execution time: {}ms | Error: {}",
                     className, methodName, duration, e.getMessage(), e);
         }
     }
