@@ -1,3 +1,4 @@
+
 package com.jonah.controller;
 
 import com.jonah.aspect.annotation.Log;
@@ -214,7 +215,7 @@ public class ExpenseController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/expenses/filter")
+    @PostMapping("/expenses/filter")
     public ResponseEntity<ApiResponseDto<List<ExpenseDto>>> filterExpenses(@RequestBody ExpenseFilterDto filter,
                                                                            Authentication  authentication,
                                                                            UriComponentsBuilder uriBuilder){

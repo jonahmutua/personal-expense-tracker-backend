@@ -1,4 +1,4 @@
-package com.jonah.aspect.config;
+package com.jonah.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
