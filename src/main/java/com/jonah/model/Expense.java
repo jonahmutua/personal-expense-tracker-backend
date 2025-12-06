@@ -14,17 +14,22 @@ public class Expense {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "expense_type",nullable = false)
     private ExpenseType expenseType;
 
+    @Column(name="date")
     private String date;
 
+    @Column(name = "amount")
     private Double amount;
 
+    @Column(name="category")
     private String category;
 
+    @Column(name="account")
     private String account;
 
+    @Column(name="note")
     private String note;
 
     @ManyToOne(fetch = FetchType.LAZY)
