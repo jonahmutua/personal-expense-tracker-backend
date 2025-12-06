@@ -1,5 +1,6 @@
 package com.jonah.dto.request;
 
+import com.jonah.model.ExpenseType;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
@@ -9,8 +10,8 @@ public class ExpenseDto {
 
     private Long id;
 
-    @Range(min = 0, max = 1, message = "Expense Type must be 0 or 1")
-    private int expenseType;
+    // ToDo: Add Consraint
+    private ExpenseType expenseType;
 
     @NotBlank(message = "Date is required")
     private String date;
