@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExpenseFilterDto {
+    // ToDo: add validation
+    int expenseType;
 
     @Pattern(regexp = "\\d{4}-\\d{2}",
             message = "Month format must be yyyy-MM",

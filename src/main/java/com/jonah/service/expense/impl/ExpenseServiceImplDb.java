@@ -8,6 +8,7 @@ import com.jonah.mapper.ExpenseMapper;
 import com.jonah.model.AppUser;
 import com.jonah.model.Expense;
 import com.jonah.repository.ExpenseRepository;
+import com.jonah.repository.specification.ExpenseSpecifications;
 import com.jonah.service.expense.ExpenseService;
 import com.jonah.service.user.UserService;
 import jakarta.validation.constraints.Max;
@@ -17,6 +18,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -126,19 +128,20 @@ public class ExpenseServiceImplDb implements ExpenseService {
     @Override
     public List<ExpenseDto> filterExpenses(ExpenseFilterDto filterDto, Long userId) {
 
-        List<Expense> expenses = expenseRepository.findByUserIdOrderByDate( userId );
-
-        // apply filters
-        List<Expense> filtered = expenses.stream()
-                .filter(expense -> filterByMonth(expense, filterDto.getMonth()) )
-                .filter( expense -> filterByCategory(expense, filterDto.getCategory()))
-                .filter(expense -> filterByAmount(expense, filterDto.getMinAmount(), filterDto.getMaxAmount()))
-                .filter(expense -> filterByDateRange(expense, filterDto.getStartDate(), filterDto.getEndDate()))
-                .filter(expense -> filterByAccount(expense, filterDto.getAccount()))
-                .toList(); // ToDo: explore Collectors...
-        // sort
-        filtered = sortExpenses(filtered, filterDto.getSortBy(), filterDto.getSortOrder() );
-
+//        List<Expense> expenses = expenseRepository.findByUserIdOrderByDate( userId );
+//
+//        // apply filters
+//        List<Expense> filtered = expenses.stream()
+//                .filter(expense -> filterByMonth(expense, filterDto.getMonth()) )
+//                .filter( expense -> filterByCategory(expense, filterDto.getCategory()))
+//                .filter(expense -> filterByAmount(expense, filterDto.getMinAmount(), filterDto.getMaxAmount()))
+//                .filter(expense -> filterByDateRange(expense, filterDto.getStartDate(), filterDto.getEndDate()))
+//                .filter(expense -> filterByAccount(expense, filterDto.getAccount()))
+//                .toList(); // ToDo: explore Collectors...
+//        // sort
+//        filtered = sortExpenses(filtered, filterDto.getSortBy(), filterDto.getSortOrder() );
+        Specification<Expense> spec = ExpenseSpecifications.buildFilter(filterDto, userId);
+        List<Expense> filtered = expenseRepository.findAll(spec);
         return expenseMapper.toListDto( filtered ) ;
     }
 
