@@ -20,8 +20,8 @@ public class ExpenseSpecifications {
             // User ID filter ( Required to ensure user Data isolation)
             predicates.add(criteriaBuilder.equal(root.get("user").get("id"), userId));
 
-            // Expense ID filter
-            if(filter.getExpenseType() < 0 ){
+            // Expense expense type filter
+            if(filter.getExpenseType() != null ){
                 predicates.add(criteriaBuilder.equal(root.get("expenseType"), filter.getExpenseType()));
             }
 

@@ -13,7 +13,9 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int expenseType;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ExpenseType expenseType;
 
     private String date;
 

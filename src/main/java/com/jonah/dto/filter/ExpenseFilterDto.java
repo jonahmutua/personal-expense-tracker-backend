@@ -1,6 +1,7 @@
 package com.jonah.dto.filter;
 
 
+import com.jonah.model.ExpenseType;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ExpenseFilterDto {
     // ToDo: add validation
-    int expenseType;
+    ExpenseType expenseType;
 
     @Pattern(regexp = "\\d{4}-\\d{2}",
             message = "Month format must be yyyy-MM",
