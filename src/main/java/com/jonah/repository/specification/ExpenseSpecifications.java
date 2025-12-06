@@ -18,7 +18,7 @@ public class ExpenseSpecifications {
             List<Predicate> predicates = new ArrayList<>();
 
             // User ID filter ( Required to ensure user Data isolation)
-            predicates.add(criteriaBuilder.equal(root.get("userId"), userId));
+            predicates.add(criteriaBuilder.equal(root.get("user.id"), userId));
 
             // Expense ID filter
             if(filter.getExpenseType() < 0 ){
