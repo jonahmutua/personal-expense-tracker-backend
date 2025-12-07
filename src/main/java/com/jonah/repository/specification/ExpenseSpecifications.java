@@ -29,7 +29,7 @@ public class ExpenseSpecifications {
             if( filter.getCategory() != null && !filter.getCategory().isEmpty()){
                 predicates.add(criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("category")),
-                        "%" + filter.getCategory() + "%"
+                        "%" + filter.getCategory().toLowerCase() + "%"
                 ));
             }
 
